@@ -1,10 +1,14 @@
-[gd_scene load_steps=10 format=3 uid="uid://bq5n2x8m4r7j1k"]
+[gd_scene load_steps=14 format=3 uid="uid://bq5n2x8m4r7j1k"]
 
 [ext_resource type="Script" path="res://scripts/game/game.gd" id="1_game"]
 [ext_resource type="Script" path="res://scripts/network/input_sync.gd" id="2_isync"]
 [ext_resource type="Script" path="res://scripts/network/state_sync.gd" id="3_ssync"]
 [ext_resource type="PackedScene" uid="uid://b4p2n8e7x3r1c" path="res://scenes/hud/virtual_joystick.tscn" id="4_vjoy"]
 [ext_resource type="Script" path="res://scripts/network/event_rpc.gd" id="5_erpc"]
+[ext_resource type="Script" path="res://scripts/hud/hud.gd" id="6_hud"]
+[ext_resource type="Script" path="res://scripts/hud/health_display.gd" id="7_health"]
+[ext_resource type="Script" path="res://scripts/hud/weapon_display.gd" id="8_weapon"]
+[ext_resource type="Script" path="res://scripts/hud/grenade_overlay.gd" id="9_grenade"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_1"]
 
@@ -77,6 +81,7 @@ default_color = Color(0.85, 0.85, 0.85, 1.0)
 
 [node name="HUD" type="CanvasLayer" parent="."]
 layer = 10
+script = ExtResource("6_hud")
 
 [node name="LeftJoystick" parent="HUD" instance=ExtResource("4_vjoy")]
 anchor_right = 0.5
@@ -118,6 +123,85 @@ grow_horizontal = 0
 grow_vertical = 0
 text = "SWAP"
 theme_override_font_sizes/font_size = 32
+
+[node name="SpectatorUI" type="Control" parent="HUD"]
+visible = false
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 20.0
+offset_right = 300.0
+offset_bottom = 80.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HUD/SpectatorUI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+alignment = 1
+
+[node name="LeftArrowButton" type="Button" parent="HUD/SpectatorUI/HBoxContainer"]
+custom_minimum_size = Vector2(80, 0)
+text = "◄"
+theme_override_font_sizes/font_size = 36
+
+[node name="SpectatingLabel" type="Label" parent="HUD/SpectatorUI/HBoxContainer"]
+custom_minimum_size = Vector2(360, 0)
+horizontal_alignment = 1
+text = "Spectating: -"
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+
+[node name="RightArrowButton" type="Button" parent="HUD/SpectatorUI/HBoxContainer"]
+custom_minimum_size = Vector2(80, 0)
+text = "►"
+theme_override_font_sizes/font_size = 36
+
+[node name="HealthDisplay" type="Control" parent="HUD"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 180.0
+offset_bottom = 72.0
+mouse_filter = 2
+script = ExtResource("7_health")
+
+[node name="WeaponDisplay" type="Control" parent="HUD"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -250.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 100.0
+grow_horizontal = 0
+mouse_filter = 2
+script = ExtResource("8_weapon")
+
+[node name="WeaponLabel" type="Label" parent="HUD/WeaponDisplay"]
+offset_right = 230.0
+offset_bottom = 44.0
+horizontal_alignment = 2
+text = "PISTOL"
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+
+[node name="AmmoLabel" type="Label" parent="HUD/WeaponDisplay"]
+offset_top = 46.0
+offset_right = 230.0
+offset_bottom = 80.0
+horizontal_alignment = 2
+text = "x\u221e"
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)
+
+[node name="GrenadeOverlay" type="Control" parent="HUD"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("9_grenade")
 
 [node name="InputSync" type="Node" parent="."]
 script = ExtResource("2_isync")

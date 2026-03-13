@@ -67,6 +67,9 @@ func _ready() -> void:
 		else:
 			_show_join_panel()
 			join_status.text = "Returned from game. Waiting for host to start..."
+	elif GameManager.pending_lobby_mode == "join":
+		GameManager.pending_lobby_mode = ""
+		_show_join_panel()
 	else:
 		_show_mode_select()
 
@@ -155,13 +158,14 @@ func _on_start_pressed() -> void:
 		"peer_ids": peer_ids,
 		"spawn_positions": spawn_positions,
 		"color_indices": color_indices,
+		"max_rounds": NetworkManager.round_count,
 	})
 
 
 func _on_back_pressed() -> void:
 	NetworkManager.disconnect_from_network()
 	connect_button.disabled = false
-	_show_mode_select()
+	get_tree().change_scene_to_file("res://scenes/main_menu/main_menu.tscn")
 
 
 func _on_round_count_changed(value: float) -> void:

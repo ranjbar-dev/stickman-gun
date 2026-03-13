@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://hit_particles_pool"]
+
+[ext_resource type="Script" path="res://scripts/effects/hit_particles.gd" id="1_hpscr"]
+
+[node name="HitParticles" type="Node2D"]
+script = ExtResource("1_hpscr")

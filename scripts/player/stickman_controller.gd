@@ -72,6 +72,10 @@ func _ready() -> void:
 # Public API
 # ------------------------------------------------------------------
 
+func get_camera() -> Camera2D:
+	return _camera
+
+
 func set_camera_limits(left: float, right: float, top: float, bottom: float) -> void:
 	_camera.set_limits(left, right, top, bottom)
 
@@ -232,6 +236,7 @@ func _physics_process(delta: float) -> void:
 	# Consume jump request exactly once per physics frame.
 	if _jump_requested and is_on_floor():
 		velocity.y = JUMP_VELOCITY
+		AudioManager.play_sfx("jump", global_position)
 	_jump_requested = false
 
 	# Horizontal movement.
@@ -326,6 +331,23 @@ func _on_died(kill_force: Vector2) -> void:
 # The guard in _on_died prevents double-execution when the host's signal also fires.
 func trigger_death_visuals(force: Vector2) -> void:
 	_on_died(force)
+
+
+# Restores the player to a living state for a new round.
+# Companion to trigger_death_visuals / _on_died.
+func revive(spawn_pos: Vector2) -> void:
+	_death_triggered = false
+	visible = true
+	global_position = spawn_pos
+	velocity = Vector2.ZERO
+	$CollisionShape2D.set_deferred("disabled", false)
+	if NetworkManager.is_host:
+		set_physics_process(true)
+	set_process_input(true)
+	_apply_shape(false)
+	_is_crouching = false
+	_renderer.is_crouching = false
+	_renderer.queue_redraw()
 
 
 # Brief white-flash hit indicator — called on all peers via on_player_hit RPC.

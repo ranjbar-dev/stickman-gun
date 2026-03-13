@@ -96,6 +96,8 @@ func _fire() -> void:
 			line.visible = true
 
 	_tracer_timer.start()
+	AudioManager.play_sfx("shotgun_blast", global_position)
+	_spawn_muzzle_flash()
 
 
 func _on_tracer_timeout() -> void:

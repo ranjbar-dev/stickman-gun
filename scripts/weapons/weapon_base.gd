@@ -6,6 +6,8 @@ extends Node2D
 
 signal ammo_changed(current: int, max_val: int)
 
+const _MUZZLE_FLASH_SCRIPT := preload("res://scripts/effects/muzzle_flash.gd")
+
 @export var fire_rate: float = 3.0   # shots per second
 @export var damage: int = 1
 @export var max_ammo: int = -1       # -1 = unlimited
@@ -90,3 +92,12 @@ func _get_owner_peer_id() -> int:
 	if controller is StickmanController:
 		return controller.peer_id
 	return 0
+
+
+# Spawns a brief muzzle flash at the weapon tip in world space.
+func _spawn_muzzle_flash() -> void:
+	if _renderer == null or _spawn_parent == null:
+		return
+	var flash: Node2D = _MUZZLE_FLASH_SCRIPT.new()
+	flash.global_position = _renderer.get_weapon_tip_world()
+	_spawn_parent.add_child(flash)

@@ -44,6 +44,14 @@ func is_alive() -> bool:
 	return not _is_dead
 
 
+# Resets health and alive-state for a new round.
+func reset() -> void:
+	health = 3
+	_is_dead = false
+	_last_attacker_id = 0
+	health_changed.emit(health)
+
+
 # Instantly kills the player without going through normal hit validation.
 # Used when a peer disconnects mid-round so their stickman dies cleanly.
 func force_kill() -> void:

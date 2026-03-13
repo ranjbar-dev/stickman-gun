@@ -50,10 +50,10 @@ func on_round_end(winner_id: int, scores: Dictionary) -> void:
 
 
 @rpc("authority", "call_local", "reliable")
-func on_match_end(final_scores: Dictionary) -> void:
+func on_match_end(final_scores: Dictionary, kill_stats: Dictionary) -> void:
 	if not is_instance_valid(_game):
 		return
-	_game.handle_match_end(final_scores)
+	_game.handle_match_end(final_scores, kill_stats)
 
 
 # Sent by host when a grenade is thrown so clients can spawn a cosmetic copy.

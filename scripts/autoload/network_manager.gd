@@ -154,7 +154,7 @@ func _should_reject_peer() -> bool:
 	if connected_players.size() >= 8:
 		return true
 	var state: int = GameManager.current_state
-	return state != GameManager.GameState.MENU and state != GameManager.GameState.LOBBY
+	return state != GameManager.GameState.MAIN_MENU and state != GameManager.GameState.LOBBY
 
 
 # Disconnects a single peer by ID; called deferred so the notify RPC can flush first.

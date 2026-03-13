@@ -19,6 +19,8 @@ const PREVIEW_DT: float = 0.08         # seconds per simulation step
 var _show_preview: bool = false
 # World-space arc points computed each frame; emitted via trajectory_updated signal.
 var _preview_points: PackedVector2Array = PackedVector2Array()
+# Optional pool reference — set by game.gd to avoid instantiation on each throw.
+var _grenade_pool: ProjectilePool = null
 
 
 func _ready() -> void:
@@ -59,14 +61,18 @@ func _fire() -> void:
 	# Grenade projectile is authoritative — only the host spawns it.
 	# Clients receive an RPC (on_grenade_thrown) to spawn a cosmetic copy.
 	if NetworkManager.is_host:
-		var grenade: GrenadeProjectile = GRENADE_SCENE.instantiate()
-		grenade.global_position = from
-		grenade.thrower_id = owner_id
-		# Add to the game world via the spawn parent set by WeaponHolder; fall back to
-		# current scene if the weapon was constructed outside the normal hierarchy.
 		var target: Node = _spawn_parent if _spawn_parent != null else get_tree().current_scene
-		target.add_child(grenade)
-		grenade.linear_velocity = throw_vel
+		var grenade: GrenadeProjectile
+		if _grenade_pool != null:
+			grenade = _grenade_pool.acquire() as GrenadeProjectile
+			if grenade != null:
+				grenade._pool = _grenade_pool
+				grenade.reset(from, throw_vel, owner_id)
+		if grenade == null:
+			# Fallback: no pool available (e.g. standalone testing).
+			grenade = GRENADE_SCENE.instantiate()
+			target.add_child(grenade)
+			grenade.reset(from, throw_vel, owner_id)
 
 		# Notify clients so they can spawn a cosmetic grenade.
 		var event_rpc: EventRpc = target.get_node_or_null("EventRpc") as EventRpc
@@ -76,6 +82,7 @@ func _fire() -> void:
 	_show_preview = false
 	_preview_points.clear()
 	trajectory_updated.emit(_preview_points)
+	AudioManager.play_sfx("grenade_throw", global_position)
 
 
 # ------------------------------------------------------------------

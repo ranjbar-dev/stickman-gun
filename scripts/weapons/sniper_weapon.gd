@@ -61,6 +61,8 @@ func _fire() -> void:
 						target_node.take_body_hit(hit_point, aim_dir, damage, _get_owner_peer_id())
 
 	_show_tracer(from, hit_point)
+	AudioManager.play_sfx("sniper_shot", global_position)
+	_spawn_muzzle_flash()
 
 
 func _show_tracer(from: Vector2, to: Vector2) -> void:

@@ -11,22 +11,38 @@ const FUSE_TIME: float = 2.0
 const BLAST_RADIUS: float = 80.0
 const BLAST_DAMAGE: int = 2
 const DRAW_RADIUS: float = 8.0
-const FUSE_LINE_LENGTH: float = 10.0
 
 var _exploded: bool = false
 var _color: Color = Color.YELLOW_GREEN
 var thrower_id: int = 0  # set by GrenadeWeapon after instantiation
+var _fuse_timer: Timer = null
+# Set by ProjectilePool so _explode() can return to the pool instead of queue_free.
+var _pool: ProjectilePool = null
 
 
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 
-	var fuse := Timer.new()
-	fuse.wait_time = FUSE_TIME
-	fuse.one_shot = true
-	fuse.timeout.connect(_explode)
-	add_child(fuse)
-	fuse.start()
+	_fuse_timer = Timer.new()
+	_fuse_timer.wait_time = FUSE_TIME
+	_fuse_timer.one_shot = true
+	_fuse_timer.timeout.connect(_explode)
+	add_child(_fuse_timer)
+	# Don't auto-start: pool pre-warms instances before they are used.
+	# reset() starts the timer when the grenade is actually thrown.
+
+
+## Re-arms this grenade for pooled reuse. Called by ProjectilePool users instead of
+## instantiating a new scene.
+func reset(pos: Vector2, vel: Vector2, thrower: int) -> void:
+	_exploded = false
+	thrower_id = thrower
+	global_position = pos
+	linear_velocity = vel
+	modulate.a = 1.0
+	if _fuse_timer != null:
+		_fuse_timer.stop()
+		_fuse_timer.start()
 
 
 func _process(_delta: float) -> void:
@@ -36,9 +52,14 @@ func _process(_delta: float) -> void:
 func _draw() -> void:
 	# Small filled circle body.
 	draw_circle(Vector2.ZERO, DRAW_RADIUS, _color)
-	# Fuse line: short stub pointing upward in local space.
-	var fuse_end := Vector2(0.0, -(DRAW_RADIUS + FUSE_LINE_LENGTH))
-	draw_line(Vector2(0.0, -DRAW_RADIUS), fuse_end, Color.ORANGE_RED, 2.0)
+
+	# Fuse indicator: arc shrinks from full circle to nothing as fuse burns down.
+	# Color shifts from orange-red toward pure red as time runs out.
+	if _fuse_timer != null and not _exploded:
+		var fuse_ratio: float = clampf(_fuse_timer.time_left / FUSE_TIME, 0.0, 1.0)
+		var arc_color := Color(1.0, fuse_ratio * 0.4, 0.0, 1.0)
+		var arc_end: float = -PI * 0.5 + TAU * fuse_ratio
+		draw_arc(Vector2.ZERO, DRAW_RADIUS + 3.0, -PI * 0.5, arc_end, 24, arc_color, 2.0)
 
 
 func _on_body_entered(body: Node) -> void:
@@ -90,5 +111,9 @@ func _explode() -> void:
 			if hbm.has_method("take_body_hit"):
 				hbm.take_body_hit(blast_center, hit_dir, BLAST_DAMAGE, thrower_id)
 
+	AudioManager.play_sfx("explosion", blast_center)
 	exploded.emit(blast_center)
-	queue_free()
+	if _pool != null:
+		_pool.release(self)
+	else:
+		queue_free()

@@ -6,24 +6,18 @@ extends Area2D
 # weapon is dropped as a new pickup at the same position.
 # Design ref: STICKFIGHT_IMPLEMENTATION_PLAN.md §2.8
 
-const BLINK_PERIOD: float = 0.5
-
 signal weapon_taken(player_id: int, weapon_type: String, pickup_pos: Vector2, dropped_type: String, dropped_ammo: int)
 
 @export var weapon_type: String = "sniper"  # "sniper" | "shotgun" | "grenade"
 # Ammo to apply after pickup. -1 means use the weapon's own default.
 @export var ammo_count: int = -1
 
-var _blink_on: bool = true
+# Sine-wave pulsing glow: brightness oscillates at 1.5 Hz between 0.5 and 1.2.
+var _pulse_time: float = 0.0
 
 
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
-	var timer := Timer.new()
-	timer.wait_time = BLINK_PERIOD
-	timer.timeout.connect(_toggle_blink)
-	add_child(timer)
-	timer.start()
 
 
 func _draw() -> void:
@@ -55,7 +49,8 @@ func _on_body_entered(body: Node) -> void:
 	if holder == null:
 		return
 
-	var player_id: int = body.get("peer_id") if body.has_method("get_weapon_holder") else 0
+	# holder != null already confirmed body is a StickmanController; read peer_id directly.
+	var player_id: int = body.get("peer_id") if body is StickmanController else 0
 	var dropped: Dictionary = holder.pick_up_secondary(weapon_type, ammo_count)
 
 	weapon_taken.emit(
@@ -69,6 +64,8 @@ func _on_body_entered(body: Node) -> void:
 	queue_free()
 
 
-func _toggle_blink() -> void:
-	_blink_on = !_blink_on
-	visible = _blink_on
+func _process(delta: float) -> void:
+	_pulse_time += delta * TAU * 1.5  # 1.5 Hz
+	var brightness: float = 0.85 + 0.35 * sin(_pulse_time)
+	modulate = Color(brightness, brightness, brightness, 1.0)
+	queue_redraw()

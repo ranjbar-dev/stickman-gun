@@ -1,0 +1,53 @@
+[gd_scene load_steps=2 format=3 uid="uid://match_end_overlay_001"]
+
+[ext_resource type="Script" path="res://scripts/ui/match_end_overlay.gd" id="1_meoscr"]
+
+[node name="MatchEndOverlay" type="CanvasLayer"]
+layer = 20
+script = ExtResource("1_meoscr")
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.0, 0.0, 0.0, 0.82)
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="Background"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -560.0
+offset_top = -360.0
+offset_right = 560.0
+offset_bottom = 360.0
+theme_override_constants/separation = 24
+
+[node name="MatchTitle" type="Label" parent="Background/VBox"]
+text = "MATCH OVER"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 72
+
+[node name="WinnerLabel" type="Label" parent="Background/VBox"]
+text = ""
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 52
+
+[node name="StatsGrid" type="GridContainer" parent="Background/VBox"]
+columns = 4
+theme_override_constants/h_separation = 40
+theme_override_constants/v_separation = 12
+
+[node name="Buttons" type="HBoxContainer" parent="Background/VBox"]
+alignment = 1
+theme_override_constants/separation = 40
+
+[node name="RematchButton" type="Button" parent="Background/VBox/Buttons"]
+custom_minimum_size = Vector2(280, 80)
+text = "REMATCH"
+theme_override_font_sizes/font_size = 38
+
+[node name="QuitButton" type="Button" parent="Background/VBox/Buttons"]
+custom_minimum_size = Vector2(280, 80)
+text = "QUIT"
+theme_override_font_sizes/font_size = 38

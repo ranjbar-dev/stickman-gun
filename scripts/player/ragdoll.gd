@@ -18,6 +18,10 @@ const LINEAR_DAMP := 0.5
 const FADE_DELAY := 5.0
 const FADE_DURATION := 1.5
 
+# Android performance: cap simultaneous ragdolls to avoid too many RigidBody2D physics.
+const MAX_RAGDOLLS: int = 3
+static var _active_ragdolls: Array[Ragdoll] = []
+
 # Collision: layer bit 3 (value 8) = ragdoll; mask bit 0 (value 1) = terrain only.
 const RAGDOLL_LAYER := 8
 const RAGDOLL_MASK := 1
@@ -55,6 +59,15 @@ func _ready() -> void:
 	global_position = _spawn_pos
 	_build_ragdoll()
 	_torso.apply_central_impulse(_kill_force * IMPULSE_SCALE)
+
+	# Enforce cap: evict the oldest active ragdoll when over the limit.
+	_active_ragdolls.append(self)
+	while _active_ragdolls.size() > MAX_RAGDOLLS:
+		var oldest: Ragdoll = _active_ragdolls[0]
+		_active_ragdolls.remove_at(0)
+		if is_instance_valid(oldest):
+			oldest._force_expire()
+
 	_start_fade_timer()
 
 
@@ -231,7 +244,19 @@ func _start_fade_timer() -> void:
 	timer.start()
 
 
+## Called when a newer ragdoll evicts this one to stay under MAX_RAGDOLLS.
+## Cancels any existing delay and starts an immediate fast fade-out.
+func _force_expire() -> void:
+	# Kill all timers so the normal path doesn't double-free.
+	for child in get_children():
+		if child is Timer:
+			(child as Timer).stop()
+			child.queue_free()
+	_on_fade_timeout()
+
+
 func _on_fade_timeout() -> void:
+	_active_ragdolls.erase(self)
 	var tween := create_tween()
 	tween.tween_property(self, "modulate:a", 0.0, FADE_DURATION)
 	tween.tween_callback(queue_free)

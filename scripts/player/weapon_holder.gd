@@ -32,6 +32,15 @@ func set_renderer(r: StickmanRenderer) -> void:
 	_sync_renderer_type()
 
 
+## Supplies the grenade projectile pool to any equipped GrenadeWeapon.
+## Called by game.gd after the pool is created.
+func set_grenade_pool(pool: ProjectilePool) -> void:
+	if _pistol is GrenadeWeapon:
+		(_pistol as GrenadeWeapon)._grenade_pool = pool
+	if _secondary is GrenadeWeapon:
+		(_secondary as GrenadeWeapon)._grenade_pool = pool
+
+
 # ------------------------------------------------------------------
 # Active weapon access
 # ------------------------------------------------------------------
@@ -66,6 +75,19 @@ func stop_active_weapon() -> void:
 # ------------------------------------------------------------------
 # Swap
 # ------------------------------------------------------------------
+
+## Drops the secondary weapon and returns the holder to pistol-only state.
+## Called between rounds so every round starts with the base pistol.
+func clear_secondary() -> void:
+	if _secondary == null:
+		return
+	_secondary.stop_firing()
+	remove_child(_secondary)
+	_secondary.queue_free()
+	_secondary = null
+	_active_is_pistol = true
+	_sync_renderer_type()
+
 
 func swap_weapon() -> void:
 	if _secondary == null:
