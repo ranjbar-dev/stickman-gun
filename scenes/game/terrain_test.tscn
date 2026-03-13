@@ -1,0 +1,92 @@
+[gd_scene load_steps=5 format=3 uid="uid://dn4t8r2m6w5p3q"]
+
+[ext_resource type="Script" path="res://scripts/game/terrain_test.gd" id="1_ttest"]
+[ext_resource type="Script" path="res://scripts/terrain/terrain_generator.gd" id="2_tgen"]
+[ext_resource type="PackedScene" uid="uid://bk3m9p2w7x5n4" path="res://scenes/player/stickman_controller.tscn" id="3_ctrl"]
+[ext_resource type="PackedScene" uid="uid://b4p2n8e7x3r1c" path="res://scenes/hud/virtual_joystick.tscn" id="4_vjoy"]
+
+[node name="TerrainTest" type="Node2D"]
+script = ExtResource("1_ttest")
+
+[node name="Background" type="ColorRect" parent="."]
+z_index = -10
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 6200.0
+offset_bottom = 1300.0
+color = Color(0.08, 0.08, 0.12, 1.0)
+mouse_filter = 2
+
+[node name="TerrainGenerator" type="Node2D" parent="."]
+script = ExtResource("2_tgen")
+
+[node name="WeaponPickups" type="Node2D" parent="."]
+
+[node name="Player" parent="." instance=ExtResource("3_ctrl")]
+position = Vector2(200.0, 755.0)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="LeftJoystick" parent="HUD" instance=ExtResource("4_vjoy")]
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="JumpButton" type="Button" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -280.0
+offset_right = 220.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "JUMP"
+theme_override_font_sizes/font_size = 36
+
+[node name="RightJoystick" parent="HUD" instance=ExtResource("4_vjoy")]
+anchor_left = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SwapButton" type="Button" parent="HUD"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -480.0
+offset_top = -400.0
+offset_right = -280.0
+offset_bottom = -300.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "SWAP"
+theme_override_font_sizes/font_size = 32
+
+[node name="SeedLabel" type="Label" parent="HUD"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 20.0
+offset_right = 300.0
+offset_bottom = 80.0
+grow_horizontal = 2
+text = "SEED: ..."
+theme_override_font_sizes/font_size = 36
+horizontal_alignment = 1
+
+[node name="NextSeedButton" type="Button" parent="HUD"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -120.0
+offset_top = 90.0
+offset_right = 120.0
+offset_bottom = 145.0
+grow_horizontal = 2
+text = "NEXT SEED"
+theme_override_font_sizes/font_size = 28
