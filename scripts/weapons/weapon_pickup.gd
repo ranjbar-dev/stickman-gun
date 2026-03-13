@@ -6,8 +6,9 @@ extends Area2D
 # weapon is dropped as a new pickup at the same position.
 # Design ref: STICKFIGHT_IMPLEMENTATION_PLAN.md §2.8
 
-const PICKUP_SCENE := preload("res://scenes/weapons/weapon_pickup.tscn")
 const BLINK_PERIOD: float = 0.5
+
+signal weapon_taken(player_id: int, weapon_type: String, pickup_pos: Vector2, dropped_type: String, dropped_ammo: int)
 
 @export var weapon_type: String = "sniper"  # "sniper" | "shotgun" | "grenade"
 # Ammo to apply after pickup. -1 means use the weapon's own default.
@@ -54,15 +55,16 @@ func _on_body_entered(body: Node) -> void:
 	if holder == null:
 		return
 
+	var player_id: int = body.get("peer_id") if body.has_method("get_weapon_holder") else 0
 	var dropped: Dictionary = holder.pick_up_secondary(weapon_type, ammo_count)
 
-	if not dropped.is_empty():
-		# Spawn a pickup for the displaced weapon so other players can grab it.
-		var new_pickup: WeaponPickup = PICKUP_SCENE.instantiate() as WeaponPickup
-		new_pickup.weapon_type = dropped.weapon_type
-		new_pickup.ammo_count  = dropped.ammo
-		new_pickup.global_position = global_position
-		get_parent().add_child(new_pickup)
+	weapon_taken.emit(
+		player_id,
+		weapon_type,
+		global_position,
+		dropped.get("weapon_type", ""),
+		dropped.get("ammo", -1)
+	)
 
 	queue_free()
 

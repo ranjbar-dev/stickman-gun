@@ -12,6 +12,7 @@ config_version=5
 
 config/name="StickFight LAN"
 config/features=PackedStringArray("4.x", "Mobile")
+run/main_scene="res://scenes/lobby/lobby.tscn"
 
 [autoload]
 

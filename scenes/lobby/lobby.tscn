@@ -1,0 +1,323 @@
+[gd_scene load_steps=2 format=3 uid="uid://lobby_scene_001"]
+
+[ext_resource type="Script" path="res://scripts/network/lobby.gd" id="1_lscr"]
+
+[node name="Lobby" type="Node"]
+script = ExtResource("1_lscr")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Background" type="ColorRect" parent="UI"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.07, 0.07, 0.1, 1.0)
+mouse_filter = 2
+
+; ==================== MODE SELECT PANEL ====================
+
+[node name="ModePanel" type="VBoxContainer" parent="UI"]
+anchor_left = 0.2
+anchor_top = 0.15
+anchor_right = 0.8
+anchor_bottom = 0.85
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="UI/ModePanel"]
+layout_mode = 2
+text = "STICKFIGHT LAN"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 72
+theme_override_colors/font_color = Color(1.0, 0.9, 0.2, 1.0)
+
+[node name="Spacer1" type="Control" parent="UI/ModePanel"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+
+[node name="Subtitle" type="Label" parent="UI/ModePanel"]
+layout_mode = 2
+text = "Select mode to start"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1.0)
+
+[node name="Spacer2" type="Control" parent="UI/ModePanel"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 60)
+
+[node name="ButtonRow" type="HBoxContainer" parent="UI/ModePanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="HostButton" type="Button" parent="UI/ModePanel/ButtonRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(300, 100)
+text = "HOST GAME"
+theme_override_font_sizes/font_size = 36
+
+[node name="Spacer" type="Control" parent="UI/ModePanel/ButtonRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(60, 0)
+
+[node name="JoinButton" type="Button" parent="UI/ModePanel/ButtonRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(300, 100)
+text = "JOIN GAME"
+theme_override_font_sizes/font_size = 36
+
+; ==================== HOST PANEL ====================
+
+[node name="HostPanel" type="VBoxContainer" parent="UI"]
+visible = false
+anchor_left = 0.02
+anchor_top = 0.02
+anchor_right = 0.98
+anchor_bottom = 0.98
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HostTitle" type="Label" parent="UI/HostPanel"]
+layout_mode = 2
+text = "HOST GAME"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 48
+theme_override_colors/font_color = Color(1.0, 0.9, 0.2, 1.0)
+
+[node name="ConnectionInfo" type="VBoxContainer" parent="UI/HostPanel"]
+layout_mode = 2
+
+[node name="IPLabel" type="Label" parent="UI/HostPanel/ConnectionInfo"]
+layout_mode = 2
+text = "..."
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 52
+theme_override_colors/font_color = Color(0.3, 1.0, 0.5, 1.0)
+
+[node name="IPHint" type="Label" parent="UI/HostPanel/ConnectionInfo"]
+layout_mode = 2
+text = "Share this address with players to join"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1.0)
+
+[node name="Separator1" type="HSeparator" parent="UI/HostPanel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="HostMain" type="HBoxContainer" parent="UI/HostPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LeftColumn" type="VBoxContainer" parent="UI/HostPanel/HostMain"]
+layout_mode = 2
+custom_minimum_size = Vector2(560, 0)
+
+[node name="ColorSection" type="VBoxContainer" parent="UI/HostPanel/HostMain/LeftColumn"]
+layout_mode = 2
+
+[node name="ColorTitle" type="Label" parent="UI/HostPanel/HostMain/LeftColumn/ColorSection"]
+layout_mode = 2
+text = "YOUR COLOR"
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1.0)
+
+[node name="ColorGrid" type="GridContainer" parent="UI/HostPanel/HostMain/LeftColumn/ColorSection"]
+layout_mode = 2
+columns = 4
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+
+[node name="ColSpacer" type="Control" parent="UI/HostPanel/HostMain/LeftColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RoundSection" type="HBoxContainer" parent="UI/HostPanel/HostMain/LeftColumn"]
+layout_mode = 2
+
+[node name="RoundLabel" type="Label" parent="UI/HostPanel/HostMain/LeftColumn/RoundSection"]
+layout_mode = 2
+text = "ROUNDS:"
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1.0)
+
+[node name="RoundSpacer" type="Control" parent="UI/HostPanel/HostMain/LeftColumn/RoundSection"]
+layout_mode = 2
+custom_minimum_size = Vector2(20, 0)
+
+[node name="RoundSpinBox" type="SpinBox" parent="UI/HostPanel/HostMain/LeftColumn/RoundSection"]
+layout_mode = 2
+custom_minimum_size = Vector2(160, 60)
+min_value = 1.0
+max_value = 10.0
+step = 1.0
+value = 3.0
+theme_override_font_sizes/font_size = 32
+
+[node name="MainSpacer" type="Control" parent="UI/HostPanel/HostMain"]
+layout_mode = 2
+custom_minimum_size = Vector2(30, 0)
+
+[node name="RightColumn" type="VBoxContainer" parent="UI/HostPanel/HostMain"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PlayersTitle" type="Label" parent="UI/HostPanel/HostMain/RightColumn"]
+layout_mode = 2
+text = "PLAYERS (1/8)"
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1.0)
+
+[node name="PlayersScroll" type="ScrollContainer" parent="UI/HostPanel/HostMain/RightColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayerListContainer" type="VBoxContainer" parent="UI/HostPanel/HostMain/RightColumn/PlayersScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="Separator2" type="HSeparator" parent="UI/HostPanel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="BottomRow" type="HBoxContainer" parent="UI/HostPanel"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="UI/HostPanel/BottomRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = ""
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.7, 0.8, 1.0, 1.0)
+
+[node name="StartButton" type="Button" parent="UI/HostPanel/BottomRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(260, 80)
+text = "START GAME"
+disabled = true
+theme_override_font_sizes/font_size = 36
+
+; ==================== JOIN PANEL ====================
+
+[node name="JoinPanel" type="VBoxContainer" parent="UI"]
+visible = false
+anchor_left = 0.02
+anchor_top = 0.02
+anchor_right = 0.98
+anchor_bottom = 0.98
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="JoinTitle" type="Label" parent="UI/JoinPanel"]
+layout_mode = 2
+text = "JOIN GAME"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 48
+theme_override_colors/font_color = Color(1.0, 0.9, 0.2, 1.0)
+
+[node name="InputRow" type="HBoxContainer" parent="UI/JoinPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="IPInput" type="LineEdit" parent="UI/JoinPanel/InputRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(500, 70)
+placeholder_text = "192.168.x.x:7777"
+theme_override_font_sizes/font_size = 32
+
+[node name="InputSpacer" type="Control" parent="UI/JoinPanel/InputRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(20, 0)
+
+[node name="ConnectButton" type="Button" parent="UI/JoinPanel/InputRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 70)
+text = "CONNECT"
+theme_override_font_sizes/font_size = 32
+
+[node name="StatusLabel" type="Label" parent="UI/JoinPanel"]
+layout_mode = 2
+text = "Enter the host's IP address above"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.7, 0.8, 1.0, 1.0)
+
+[node name="Separator1" type="HSeparator" parent="UI/JoinPanel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="JoinMain" type="HBoxContainer" parent="UI/JoinPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LeftColumn" type="VBoxContainer" parent="UI/JoinPanel/JoinMain"]
+layout_mode = 2
+custom_minimum_size = Vector2(560, 0)
+
+[node name="ColorSection" type="VBoxContainer" parent="UI/JoinPanel/JoinMain/LeftColumn"]
+layout_mode = 2
+
+[node name="ColorTitle" type="Label" parent="UI/JoinPanel/JoinMain/LeftColumn/ColorSection"]
+layout_mode = 2
+text = "YOUR COLOR"
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1.0)
+
+[node name="ColorGrid" type="GridContainer" parent="UI/JoinPanel/JoinMain/LeftColumn/ColorSection"]
+layout_mode = 2
+columns = 4
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+
+[node name="ColSpacer" type="Control" parent="UI/JoinPanel/JoinMain/LeftColumn"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 20)
+
+[node name="RoundsDisplay" type="Label" parent="UI/JoinPanel/JoinMain/LeftColumn"]
+layout_mode = 2
+text = "ROUNDS: -"
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1.0)
+
+[node name="WaitingLabel" type="Label" parent="UI/JoinPanel/JoinMain/LeftColumn"]
+layout_mode = 2
+text = "Waiting for host to start..."
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.5, 0.7, 1.0, 1.0)
+
+[node name="MainSpacer" type="Control" parent="UI/JoinPanel/JoinMain"]
+layout_mode = 2
+custom_minimum_size = Vector2(30, 0)
+
+[node name="RightColumn" type="VBoxContainer" parent="UI/JoinPanel/JoinMain"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PlayersTitle" type="Label" parent="UI/JoinPanel/JoinMain/RightColumn"]
+layout_mode = 2
+text = "PLAYERS (0/8)"
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1.0)
+
+[node name="PlayersScroll" type="ScrollContainer" parent="UI/JoinPanel/JoinMain/RightColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayerListContainer" type="VBoxContainer" parent="UI/JoinPanel/JoinMain/RightColumn/PlayersScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+; ==================== BACK BUTTON ====================
+
+[node name="BackButton" type="Button" parent="UI"]
+visible = false
+anchor_left = 0.0
+anchor_top = 0.92
+anchor_right = 0.12
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "← BACK"
+theme_override_font_sizes/font_size = 28

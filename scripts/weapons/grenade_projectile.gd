@@ -15,6 +15,7 @@ const FUSE_LINE_LENGTH: float = 10.0
 
 var _exploded: bool = false
 var _color: Color = Color.YELLOW_GREEN
+var thrower_id: int = 0  # set by GrenadeWeapon after instantiation
 
 
 func _ready() -> void:
@@ -55,36 +56,39 @@ func _explode() -> void:
 
 	var blast_center: Vector2 = global_position
 
-	# Query all physics bodies inside the blast radius.
-	var space_state := get_world_2d().direct_space_state
-	var query := PhysicsShapeQueryParameters2D.new()
-	var shape := CircleShape2D.new()
-	shape.radius = BLAST_RADIUS
-	query.shape = shape
-	query.transform = Transform2D(0.0, blast_center)
-	# Layer mask: terrain (1) + body hitboxes (4) + player bodies (any layer they use).
-	query.collision_mask = 0xFFFF
-	query.collide_with_bodies = true
-	query.collide_with_areas = false
+	# Blast damage is authoritative — only the host applies it.
+	# On clients, the grenade physics still runs (for visual fidelity), but
+	# damage is skipped; the host will broadcast hit RPCs to all peers.
+	if NetworkManager.is_host:
+		var space_state := get_world_2d().direct_space_state
+		var query := PhysicsShapeQueryParameters2D.new()
+		var shape := CircleShape2D.new()
+		shape.radius = BLAST_RADIUS
+		query.shape = shape
+		query.transform = Transform2D(0.0, blast_center)
+		# Layer mask: terrain (1) + body hitboxes (4) + player bodies (any layer they use).
+		query.collision_mask = 0xFFFF
+		query.collide_with_bodies = true
+		query.collide_with_areas = false
 
-	var results := space_state.intersect_shape(query, 16)
-	var already_hit: Array[Node] = []
+		var results := space_state.intersect_shape(query, 16)
+		var already_hit: Array[Node] = []
 
-	for info in results:
-		var body: Object = info.collider
-		if not (body is Node):
-			continue
-		# Resolve HitboxManager from CharacterBody2D or its children.
-		var hbm: Node = null
-		if body.has_node("HitboxManager"):
-			hbm = body.get_node("HitboxManager")
-		if hbm == null or already_hit.has(hbm):
-			continue
-		already_hit.append(hbm)
+		for info in results:
+			var body: Object = info.collider
+			if not (body is Node):
+				continue
+			# Resolve HitboxManager from CharacterBody2D or its children.
+			var hbm: Node = null
+			if body.has_node("HitboxManager"):
+				hbm = body.get_node("HitboxManager")
+			if hbm == null or already_hit.has(hbm):
+				continue
+			already_hit.append(hbm)
 
-		var hit_dir: Vector2 = (body.global_position - blast_center).normalized()
-		if hbm.has_method("take_body_hit"):
-			hbm.take_body_hit(blast_center, hit_dir, BLAST_DAMAGE)
+			var hit_dir: Vector2 = (body.global_position - blast_center).normalized()
+			if hbm.has_method("take_body_hit"):
+				hbm.take_body_hit(blast_center, hit_dir, BLAST_DAMAGE, thrower_id)
 
 	exploded.emit(blast_center)
 	queue_free()

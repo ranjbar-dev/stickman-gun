@@ -81,3 +81,12 @@ func _get_owner_exclusions() -> Array[RID]:
 		if child is CollisionObject2D:
 			rids.append(child.get_rid())
 	return rids
+
+
+# Returns the peer_id of the StickmanController that owns this weapon.
+# Used to identify the attacker when a hit is registered on the host.
+func _get_owner_peer_id() -> int:
+	var controller: Node = get_parent().get_parent()  # WeaponHolder → StickmanController
+	if controller is StickmanController:
+		return controller.peer_id
+	return 0

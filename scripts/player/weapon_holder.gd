@@ -40,6 +40,10 @@ func get_active_weapon() -> WeaponBase:
 	return _pistol if _active_is_pistol else _secondary
 
 
+func is_active_weapon_firing() -> bool:
+	return get_active_weapon()._is_firing
+
+
 # ------------------------------------------------------------------
 # Input forwarding
 # ------------------------------------------------------------------

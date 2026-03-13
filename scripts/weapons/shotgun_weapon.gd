@@ -49,39 +49,51 @@ func _fire() -> void:
 	var base_angle: float = aim_dir.angle()
 	var parent_global: Vector2 = get_parent().global_position
 
-	var space_state := get_world_2d().direct_space_state
-	var exclusions: Array[RID] = _get_owner_exclusions()
+	# Damage and raycasts run only on the authoritative host. Clients still run
+	# _fire() so tracer lines appear immediately for local visual feedback.
+	if NetworkManager.is_host:
+		var space_state := get_world_2d().direct_space_state
+		var exclusions: Array[RID] = _get_owner_exclusions()
 
-	for i in PELLET_COUNT:
-		var spread: float = randf_range(-SPREAD_HALF, SPREAD_HALF)
-		var pellet_dir: Vector2 = Vector2.from_angle(base_angle + spread)
-		var to: Vector2 = from + pellet_dir * RANGE
+		for i in PELLET_COUNT:
+			var spread: float = randf_range(-SPREAD_HALF, SPREAD_HALF)
+			var pellet_dir: Vector2 = Vector2.from_angle(base_angle + spread)
+			var to: Vector2 = from + pellet_dir * RANGE
 
-		var query := PhysicsRayQueryParameters2D.create(from, to)
-		query.collision_mask = 7
-		query.collide_with_areas = true
-		query.collide_with_bodies = true
-		query.exclude = exclusions
+			var query := PhysicsRayQueryParameters2D.create(from, to)
+			query.collision_mask = 7
+			query.collide_with_areas = true
+			query.collide_with_bodies = true
+			query.exclude = exclusions
 
-		var result := space_state.intersect_ray(query)
-		var hit_point: Vector2 = to
+			var result := space_state.intersect_ray(query)
+			var hit_point: Vector2 = to
 
-		if result:
-			hit_point = result.position
-			var collider: Object = result.collider
-			if collider is Area2D:
-				var target_node := collider.get_parent()
-				if collider.is_in_group("head_hitbox"):
-					if target_node.has_method("take_head_hit"):
-						target_node.take_head_hit(hit_point, pellet_dir)
-				elif collider.is_in_group("body_hitbox"):
-					if target_node.has_method("take_body_hit"):
-						target_node.take_body_hit(hit_point, pellet_dir, damage)
+			if result:
+				hit_point = result.position
+				var collider: Object = result.collider
+				if collider is Area2D:
+					var target_node := collider.get_parent()
+					if collider.is_in_group("head_hitbox"):
+						if target_node.has_method("take_head_hit"):
+							target_node.take_head_hit(hit_point, pellet_dir, _get_owner_peer_id())
+					elif collider.is_in_group("body_hitbox"):
+						if target_node.has_method("take_body_hit"):
+							target_node.take_body_hit(hit_point, pellet_dir, damage, _get_owner_peer_id())
 
-		# Show tracer for this pellet.
-		var line: Line2D = _tracer_lines[i]
-		line.points = PackedVector2Array([from - parent_global, hit_point - parent_global])
-		line.visible = true
+			# Show tracer for this pellet.
+			var line: Line2D = _tracer_lines[i]
+			line.points = PackedVector2Array([from - parent_global, hit_point - parent_global])
+			line.visible = true
+	else:
+		# Client: show tracer lines without raycasting (cosmetic only).
+		for i in PELLET_COUNT:
+			var spread: float = randf_range(-SPREAD_HALF, SPREAD_HALF)
+			var pellet_dir: Vector2 = Vector2.from_angle(base_angle + spread)
+			var to: Vector2 = from + pellet_dir * RANGE
+			var line: Line2D = _tracer_lines[i]
+			line.points = PackedVector2Array([from - parent_global, to - parent_global])
+			line.visible = true
 
 	_tracer_timer.start()
 

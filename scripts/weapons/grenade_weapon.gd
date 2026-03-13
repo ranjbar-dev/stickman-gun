@@ -54,14 +54,24 @@ func _fire() -> void:
 
 	var from: Vector2 = _renderer.get_weapon_tip_world()
 	var throw_vel: Vector2 = _calc_throw_velocity()
+	var owner_id: int = _get_owner_peer_id()
 
-	var grenade: GrenadeProjectile = GRENADE_SCENE.instantiate()
-	grenade.global_position = from
-	# Add to the game world via the spawn parent set by WeaponHolder; fall back to
-	# current scene if the weapon was constructed outside the normal hierarchy.
-	var target: Node = _spawn_parent if _spawn_parent != null else get_tree().current_scene
-	target.add_child(grenade)
-	grenade.linear_velocity = throw_vel
+	# Grenade projectile is authoritative — only the host spawns it.
+	# Clients receive an RPC (on_grenade_thrown) to spawn a cosmetic copy.
+	if NetworkManager.is_host:
+		var grenade: GrenadeProjectile = GRENADE_SCENE.instantiate()
+		grenade.global_position = from
+		grenade.thrower_id = owner_id
+		# Add to the game world via the spawn parent set by WeaponHolder; fall back to
+		# current scene if the weapon was constructed outside the normal hierarchy.
+		var target: Node = _spawn_parent if _spawn_parent != null else get_tree().current_scene
+		target.add_child(grenade)
+		grenade.linear_velocity = throw_vel
+
+		# Notify clients so they can spawn a cosmetic grenade.
+		var event_rpc: EventRpc = target.get_node_or_null("EventRpc") as EventRpc
+		if event_rpc:
+			event_rpc.on_grenade_thrown.rpc(owner_id, from, throw_vel)
 
 	_show_preview = false
 	_preview_points.clear()

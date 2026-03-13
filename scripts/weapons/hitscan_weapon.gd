@@ -31,32 +31,35 @@ func _fire() -> void:
 	var from: Vector2 = _renderer.get_weapon_tip_world()
 	var aim_dir: Vector2 = _renderer.get_aim_dir_world()
 	var to: Vector2 = from + aim_dir * RANGE
-
-	var space_state := get_world_2d().direct_space_state
-	var query := PhysicsRayQueryParameters2D.create(from, to)
-	# Layer 1 = terrain, layer 2 = head_hitbox, layer 3 = body_hitbox (bits 0–2 → mask 7).
-	query.collision_mask = 7
-	query.collide_with_areas = true
-	query.collide_with_bodies = true
-	query.exclude = _get_owner_exclusions()
-
-	var result := space_state.intersect_ray(query)
 	var hit_point: Vector2 = to
 
-	if result:
-		hit_point = result.position
-		var collider: Object = result.collider
-		# Only Area2D nodes carry hitbox groups; bodies are terrain.
-		if collider is Area2D:
-			var target_node := collider.get_parent()
-			if collider.is_in_group("head_hitbox"):
-				head_hit.emit(hit_point)
-				if target_node.has_method("take_head_hit"):
-					target_node.take_head_hit(hit_point, aim_dir)
-			elif collider.is_in_group("body_hitbox"):
-				body_hit.emit(hit_point)
-				if target_node.has_method("take_body_hit"):
-					target_node.take_body_hit(hit_point, aim_dir)
+	# Damage is computed only on the authoritative host. Clients still run _fire()
+	# for immediate tracer feedback but must not touch health state locally.
+	if NetworkManager.is_host:
+		var space_state := get_world_2d().direct_space_state
+		var query := PhysicsRayQueryParameters2D.create(from, to)
+		# Layer 1 = terrain, layer 2 = head_hitbox, layer 3 = body_hitbox (bits 0–2 → mask 7).
+		query.collision_mask = 7
+		query.collide_with_areas = true
+		query.collide_with_bodies = true
+		query.exclude = _get_owner_exclusions()
+
+		var result := space_state.intersect_ray(query)
+
+		if result:
+			hit_point = result.position
+			var collider: Object = result.collider
+			# Only Area2D nodes carry hitbox groups; bodies are terrain.
+			if collider is Area2D:
+				var target_node := collider.get_parent()
+				if collider.is_in_group("head_hitbox"):
+					head_hit.emit(hit_point)
+					if target_node.has_method("take_head_hit"):
+						target_node.take_head_hit(hit_point, aim_dir, _get_owner_peer_id())
+				elif collider.is_in_group("body_hitbox"):
+					body_hit.emit(hit_point)
+					if target_node.has_method("take_body_hit"):
+						target_node.take_body_hit(hit_point, aim_dir, damage, _get_owner_peer_id())
 
 	_show_tracer(from, hit_point)
 
