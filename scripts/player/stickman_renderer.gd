@@ -37,6 +37,12 @@ const LEFT_FOREARM_ANGLE := PI * 0.65
 		is_crouching = value
 		queue_redraw()
 
+# Updated by WeaponHolder whenever the active slot changes.
+@export var active_weapon_type: String = "pistol":
+	set(value):
+		active_weapon_type = value
+		queue_redraw()
+
 
 func _draw() -> void:
 	var body_length := CROUCH_BODY if is_crouching else STANDING_BODY
@@ -77,7 +83,6 @@ func _draw() -> void:
 	var arm_dir := Vector2(cos(aim_angle), sin(aim_angle))
 	var elbow_r: Vector2 = shoulder_r + arm_dir * ARM_UPPER
 	var hand_r: Vector2 = elbow_r + arm_dir * ARM_LOWER
-	var weapon_tip: Vector2 = hand_r + arm_dir * WEAPON_LENGTH
 
 	# --- Draw calls ---
 
@@ -101,8 +106,26 @@ func _draw() -> void:
 	draw_line(shoulder_r, elbow_r, player_color, LINE_WIDTH)
 	draw_line(elbow_r, hand_r, player_color, LINE_WIDTH)
 
-	# Weapon
-	draw_line(hand_r, weapon_tip, player_color, WEAPON_LINE_WIDTH)
+	# Weapon — visual varies by active weapon type.
+	match active_weapon_type:
+		"sniper":
+			# Long thin line (40 px).
+			var tip: Vector2 = hand_r + arm_dir * 40.0
+			draw_line(hand_r, tip, player_color, 1.8)
+		"shotgun":
+			# Medium barrel (28 px) with a 2-line spread fork at the tip.
+			var tip: Vector2 = hand_r + arm_dir * 28.0
+			draw_line(hand_r, tip, player_color, WEAPON_LINE_WIDTH)
+			var perp := arm_dir.rotated(PI * 0.5) * 4.0
+			draw_line(tip - arm_dir * 4.0 + perp, tip + arm_dir * 4.0 + perp, player_color, 1.8)
+			draw_line(tip - arm_dir * 4.0 - perp, tip + arm_dir * 4.0 - perp, player_color, 1.8)
+		"grenade":
+			# Small filled circle at the hand — no barrel line.
+			draw_circle(hand_r + arm_dir * 6.0, 5.0, player_color)
+		_:
+			# "pistol" — default short line (24 px).
+			var weapon_tip: Vector2 = hand_r + arm_dir * WEAPON_LENGTH
+			draw_line(hand_r, weapon_tip, player_color, WEAPON_LINE_WIDTH)
 
 
 # ------------------------------------------------------------------
@@ -116,7 +139,13 @@ func get_weapon_tip_world() -> Vector2:
 	var neck_y: float = hip_y - body_length
 	var shoulder_r_local := Vector2(SHOULDER_HALF_WIDTH, neck_y)
 	var arm_dir_local := Vector2(cos(aim_angle), sin(aim_angle))
-	var tip_local := shoulder_r_local + arm_dir_local * (ARM_UPPER + ARM_LOWER + WEAPON_LENGTH)
+	var weapon_ext: float
+	match active_weapon_type:
+		"sniper": weapon_ext = 40.0
+		"shotgun": weapon_ext = 28.0
+		"grenade": weapon_ext = 6.0
+		_: weapon_ext = WEAPON_LENGTH
+	var tip_local := shoulder_r_local + arm_dir_local * (ARM_UPPER + ARM_LOWER + weapon_ext)
 	# Apply scale.x (facing flip) to map from renderer-local to world space.
 	return global_position + Vector2(tip_local.x * scale.x, tip_local.y)
 

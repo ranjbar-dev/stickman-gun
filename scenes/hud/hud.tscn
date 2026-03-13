@@ -1,0 +1,52 @@
+[gd_scene load_steps=5 format=3 uid="uid://dh7n3q2p5r8w1m"]
+
+[ext_resource type="Script" path="res://scripts/hud/hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://scripts/hud/health_display.gd" id="2_health"]
+[ext_resource type="Script" path="res://scripts/hud/weapon_display.gd" id="3_weapon"]
+[ext_resource type="Script" path="res://scripts/hud/grenade_overlay.gd" id="4_grenade"]
+
+[node name="HUD" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_hud")
+
+[node name="HealthDisplay" type="Control" parent="."]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 180.0
+offset_bottom = 72.0
+mouse_filter = 2
+script = ExtResource("2_health")
+
+[node name="WeaponDisplay" type="Control" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -250.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 100.0
+grow_horizontal = 0
+mouse_filter = 2
+script = ExtResource("3_weapon")
+
+[node name="WeaponLabel" type="Label" parent="WeaponDisplay"]
+offset_right = 230.0
+offset_bottom = 44.0
+horizontal_alignment = 2
+text = "PISTOL"
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+
+[node name="AmmoLabel" type="Label" parent="WeaponDisplay"]
+offset_top = 46.0
+offset_right = 230.0
+offset_bottom = 80.0
+horizontal_alignment = 2
+text = "x\u221e"
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)
+
+[node name="GrenadeOverlay" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("4_grenade")

@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://dh7q2n5m8p3r1c"]
+
+[ext_resource type="Script" path="res://scripts/player/weapon_holder.gd" id="1_wh"]
+[ext_resource type="PackedScene" uid="uid://dw5m3k9p2x8r6" path="res://scenes/weapons/hitscan_weapon.tscn" id="2_pistol"]
+
+[node name="WeaponHolder" type="Node2D"]
+script = ExtResource("1_wh")
+
+[node name="HitscanWeapon" parent="." instance=ExtResource("2_pistol")]

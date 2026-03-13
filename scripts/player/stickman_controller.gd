@@ -1,6 +1,8 @@
 class_name StickmanController
 extends CharacterBody2D
 
+const RAGDOLL_SCENE := preload("res://scenes/player/ragdoll.tscn")
+
 # Movement tuning — all values from STICKFIGHT_GAME_DESIGN.md Section 4.
 const WALK_SPEED: float = 200.0
 const CROUCH_SPEED: float = 100.0
@@ -27,8 +29,9 @@ const CROUCH_HEIGHT: float = 50.0
 
 @onready var _renderer: StickmanRenderer = $StickmanRenderer
 @onready var _col: CollisionShape2D = $CollisionShape2D
-@onready var _weapon: HitscanWeapon = $HitscanWeapon
+@onready var _weapon_holder: WeaponHolder = $WeaponHolder
 @onready var _camera: Camera2D = $Camera2D
+@onready var _hitbox_manager: HitboxManager = $HitboxManager
 
 var _move_dir: float = 0.0
 var _is_crouching: bool = false
@@ -42,7 +45,8 @@ var _aim_active: bool = false
 func _ready() -> void:
 	_renderer.player_color = player_color
 	_apply_shape(false)
-	_weapon.set_renderer(_renderer)
+	_weapon_holder.set_renderer(_renderer)
+	_hitbox_manager.died.connect(_on_died)
 
 
 # ------------------------------------------------------------------
@@ -67,6 +71,16 @@ func connect_aim_joystick(right: VirtualJoystick) -> void:
 func request_jump() -> void:
 	if is_on_floor():
 		_jump_requested = true
+
+
+# Toggles between pistol and secondary slot (no-op if no secondary is held).
+func request_swap() -> void:
+	_weapon_holder.swap_weapon()
+
+
+# Exposes the holder so pickups can call pick_up_secondary() directly.
+func get_weapon_holder() -> WeaponHolder:
+	return _weapon_holder
 
 
 # ------------------------------------------------------------------
@@ -127,13 +141,14 @@ func _on_aim_input(dir: Vector2) -> void:
 	# is preserved when the thumb rests near centre.
 	if dir.length() > 0.0:
 		_renderer.aim_angle = atan2(dir.y, dir.x * _facing)
-	_weapon.start_firing()
+	_weapon_holder.set_aim_input(dir)
+	_weapon_holder.start_firing()
 
 
 func _on_aim_released() -> void:
 	_aim_active = false
 	_renderer.aim_angle = 0.0
-	_weapon.stop_firing()
+	_weapon_holder.stop_active_weapon()
 
 
 # Resize the CapsuleShape2D and reposition it so its bottom stays at local Y=0.
@@ -147,3 +162,18 @@ func _apply_shape(crouching: bool) -> void:
 		shape.radius = STAND_RADIUS
 		shape.height = STAND_HEIGHT
 		_col.position.y = -(STAND_HEIGHT * 0.5)
+
+
+func _on_died(kill_force: Vector2) -> void:
+	_weapon_holder.stop_active_weapon()
+	set_physics_process(false)
+	set_process_input(false)
+
+	# Spawn ragdoll at current position before hiding this body.
+	var ragdoll: Ragdoll = RAGDOLL_SCENE.instantiate()
+	ragdoll.initialize(global_position, player_color, kill_force)
+	get_parent().add_child(ragdoll)
+
+	# Hide the CharacterBody2D — ragdoll takes over visually.
+	visible = false
+	$CollisionShape2D.set_deferred("disabled", true)

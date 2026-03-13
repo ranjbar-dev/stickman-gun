@@ -1,9 +1,11 @@
-[gd_scene load_steps=18 format=3 uid="uid://cm6p3q8r2s7t5"]
+[gd_scene load_steps=20 format=3 uid="uid://cm6p3q8r2s7t5"]
 
 [ext_resource type="Script" path="res://scripts/game/test_movement.gd" id="1_tmscr"]
 [ext_resource type="PackedScene" uid="uid://bk3m9p2w7x5n4" path="res://scenes/player/stickman_controller.tscn" id="2_ctrl"]
 [ext_resource type="PackedScene" uid="uid://b4p2n8e7x3r1c" path="res://scenes/hud/virtual_joystick.tscn" id="3_vjoy"]
 [ext_resource type="PackedScene" uid="uid://c7n4q8e5z2j1m" path="res://scenes/player/target_dummy.tscn" id="4_dummy"]
+[ext_resource type="PackedScene" uid="uid://cp5r7n2q4w8x1m" path="res://scenes/weapons/weapon_pickup.tscn" id="5_pickup"]
+[ext_resource type="PackedScene" uid="uid://dh7n3q2p5r8w1m" path="res://scenes/hud/hud.tscn" id="6_hud"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_1"]
 
@@ -198,6 +200,20 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="SwapButton" type="Button" parent="HUD"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -480.0
+offset_top = -400.0
+offset_right = -280.0
+offset_bottom = -300.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "SWAP"
+theme_override_font_sizes/font_size = 32
+
 [node name="Dummy1" parent="." instance=ExtResource("4_dummy")]
 position = Vector2(1100, 755)
 
@@ -209,3 +225,17 @@ position = Vector2(3600, 755)
 
 [node name="Dummy4" parent="." instance=ExtResource("4_dummy")]
 position = Vector2(4600, 755)
+
+[node name="SniperPickup" parent="." instance=ExtResource("5_pickup")]
+position = Vector2(825, 495)
+weapon_type = "sniper"
+
+[node name="ShotgunPickup" parent="." instance=ExtResource("5_pickup")]
+position = Vector2(2100, 615)
+weapon_type = "shotgun"
+
+[node name="GrenadePickup" parent="." instance=ExtResource("5_pickup")]
+position = Vector2(3700, 495)
+weapon_type = "grenade"
+
+[node name="GameHUD" parent="." instance=ExtResource("6_hud")]

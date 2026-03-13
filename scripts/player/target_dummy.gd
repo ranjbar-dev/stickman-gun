@@ -27,12 +27,12 @@ func _ready() -> void:
 	$BodyHitbox.add_to_group("body_hitbox")
 
 
-func take_head_hit(hit_pos: Vector2) -> void:
+func take_head_hit(hit_pos: Vector2, hit_dir: Vector2 = Vector2.ZERO) -> void:
 	print("HEADSHOT on %s at %s" % [name, hit_pos])
 	_flash(Color(1.0, 0.15, 0.15, 1.0))
 
 
-func take_body_hit(hit_pos: Vector2) -> void:
+func take_body_hit(hit_pos: Vector2, hit_dir: Vector2 = Vector2.ZERO) -> void:
 	print("Body hit on %s at %s" % [name, hit_pos])
 	_flash(Color(1.0, 0.8, 0.1, 1.0))
 
