@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://dw5m3k9p2x8r6"]
+
+[ext_resource type="Script" path="res://scripts/weapons/hitscan_weapon.gd" id="1_hwscr"]
+
+[node name="HitscanWeapon" type="Node2D"]
+script = ExtResource("1_hwscr")
+
+[node name="TracerLine" type="Line2D" parent="."]
+visible = false
+default_color = Color(1, 1, 0.3, 0.9)
+width = 1.5
+z_index = 5
+
+[node name="TracerTimer" type="Timer" parent="."]
+wait_time = 0.05
+one_shot = true

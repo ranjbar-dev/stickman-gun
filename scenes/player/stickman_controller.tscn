@@ -1,0 +1,27 @@
+[gd_scene load_steps=6 format=3 uid="uid://bk3m9p2w7x5n4"]
+
+[ext_resource type="Script" path="res://scripts/player/stickman_controller.gd" id="1_ctrl"]
+[ext_resource type="Script" path="res://scripts/player/stickman_renderer.gd" id="2_rend"]
+[ext_resource type="PackedScene" uid="uid://dw5m3k9p2x8r6" path="res://scenes/weapons/hitscan_weapon.tscn" id="3_hw"]
+[ext_resource type="Script" path="res://scripts/player/player_camera.gd" id="4_cam"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_1"]
+radius = 15.0
+height = 90.0
+
+[node name="StickmanController" type="CharacterBody2D"]
+script = ExtResource("1_ctrl")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -45)
+shape = SubResource("CapsuleShape2D_1")
+
+[node name="StickmanRenderer" type="Node2D" parent="."]
+script = ExtResource("2_rend")
+player_color = Color(1, 1, 1, 1)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(1.5, 1.5)
+script = ExtResource("4_cam")
+
+[node name="HitscanWeapon" parent="." instance=ExtResource("3_hw")]

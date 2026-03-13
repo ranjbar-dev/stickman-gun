@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://c7m8n3p9q4r2s"]
+
+[ext_resource type="Script" path="res://scripts/hud/test_joystick.gd" id="1_tjscr"]
+[ext_resource type="PackedScene" uid="uid://b4p2n8e7x3r1c" path="res://scenes/hud/virtual_joystick.tscn" id="2_vjscn"]
+
+[node name="TestJoystick" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_tjscr")
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.08, 0.08, 0.12, 1.0)
+
+[node name="LeftJoystick" parent="." instance=ExtResource("2_vjscn")]
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RightJoystick" parent="." instance=ExtResource("2_vjscn")]
+anchor_left = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DebugLabel" type="Label" parent="."]
+anchor_right = 1.0
+offset_top = 30.0
+offset_bottom = 90.0
+grow_horizontal = 2
+mouse_filter = 2
+text = "MOVE: (0.00, 0.00)     AIM: (0.00, 0.00)"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 36

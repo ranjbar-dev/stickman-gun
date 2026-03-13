@@ -1,0 +1,211 @@
+[gd_scene load_steps=18 format=3 uid="uid://cm6p3q8r2s7t5"]
+
+[ext_resource type="Script" path="res://scripts/game/test_movement.gd" id="1_tmscr"]
+[ext_resource type="PackedScene" uid="uid://bk3m9p2w7x5n4" path="res://scenes/player/stickman_controller.tscn" id="2_ctrl"]
+[ext_resource type="PackedScene" uid="uid://b4p2n8e7x3r1c" path="res://scenes/hud/virtual_joystick.tscn" id="3_vjoy"]
+[ext_resource type="PackedScene" uid="uid://c7n4q8e5z2j1m" path="res://scenes/player/target_dummy.tscn" id="4_dummy"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_1"]
+
+[sub_resource type="BoxShape2D" id="BoxShape2D_1"]
+size = Vector2(250, 8)
+
+[sub_resource type="BoxShape2D" id="BoxShape2D_2"]
+size = Vector2(250, 8)
+
+[sub_resource type="BoxShape2D" id="BoxShape2D_3"]
+size = Vector2(250, 8)
+
+[sub_resource type="BoxShape2D" id="BoxShape2D_4"]
+size = Vector2(250, 8)
+
+[sub_resource type="BoxShape2D" id="BoxShape2D_5"]
+size = Vector2(250, 8)
+
+[sub_resource type="BoxShape2D" id="BoxShape2D_6"]
+size = Vector2(250, 8)
+
+[sub_resource type="BoxShape2D" id="BoxShape2D_7"]
+size = Vector2(250, 8)
+
+[sub_resource type="BoxShape2D" id="BoxShape2D_8"]
+size = Vector2(250, 8)
+
+[sub_resource type="BoxShape2D" id="BoxShape2D_9"]
+size = Vector2(300, 8)
+
+[node name="TestMovement" type="Node2D"]
+script = ExtResource("1_tmscr")
+
+[node name="Background" type="ColorRect" parent="."]
+z_index = -10
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 5000.0
+offset_bottom = 1200.0
+color = Color(0.08, 0.08, 0.12, 1.0)
+mouse_filter = 2
+
+[node name="Ground" type="StaticBody2D" parent="."]
+
+[node name="GroundShape" type="CollisionShape2D" parent="Ground"]
+position = Vector2(0, 800)
+shape = SubResource("WorldBoundaryShape2D_1")
+
+[node name="GroundLine" type="Line2D" parent="Ground"]
+points = PackedVector2Array(-200, 800, 5200, 800)
+width = 4.0
+default_color = Color(0.85, 0.85, 0.85, 1.0)
+
+[node name="LeftWall" type="Line2D" parent="."]
+points = PackedVector2Array(0, 200, 0, 800)
+width = 4.0
+default_color = Color(1, 0.4, 0.1, 1.0)
+
+[node name="RightWall" type="Line2D" parent="."]
+points = PackedVector2Array(4800, 200, 4800, 800)
+width = 4.0
+default_color = Color(1, 0.4, 0.1, 1.0)
+
+[node name="Platform1" type="StaticBody2D" parent="."]
+
+[node name="PlatShape" type="CollisionShape2D" parent="Platform1"]
+position = Vector2(425, 650)
+shape = SubResource("BoxShape2D_1")
+
+[node name="PlatLine" type="Line2D" parent="Platform1"]
+points = PackedVector2Array(300, 650, 550, 650)
+width = 4.0
+default_color = Color(0.85, 0.85, 0.85, 1.0)
+
+[node name="Platform2" type="StaticBody2D" parent="."]
+
+[node name="PlatShape" type="CollisionShape2D" parent="Platform2"]
+position = Vector2(825, 530)
+shape = SubResource("BoxShape2D_2")
+
+[node name="PlatLine" type="Line2D" parent="Platform2"]
+points = PackedVector2Array(700, 530, 950, 530)
+width = 4.0
+default_color = Color(0.85, 0.85, 0.85, 1.0)
+
+[node name="Platform3" type="StaticBody2D" parent="."]
+
+[node name="PlatShape" type="CollisionShape2D" parent="Platform3"]
+position = Vector2(1225, 650)
+shape = SubResource("BoxShape2D_3")
+
+[node name="PlatLine" type="Line2D" parent="Platform3"]
+points = PackedVector2Array(1100, 650, 1350, 650)
+width = 4.0
+default_color = Color(0.85, 0.85, 0.85, 1.0)
+
+[node name="Platform4" type="StaticBody2D" parent="."]
+
+[node name="PlatShape" type="CollisionShape2D" parent="Platform4"]
+position = Vector2(1650, 530)
+shape = SubResource("BoxShape2D_4")
+
+[node name="PlatLine" type="Line2D" parent="Platform4"]
+points = PackedVector2Array(1525, 530, 1775, 530)
+width = 4.0
+default_color = Color(0.85, 0.85, 0.85, 1.0)
+
+[node name="Platform5" type="StaticBody2D" parent="."]
+
+[node name="PlatShape" type="CollisionShape2D" parent="Platform5"]
+position = Vector2(2100, 650)
+shape = SubResource("BoxShape2D_5")
+
+[node name="PlatLine" type="Line2D" parent="Platform5"]
+points = PackedVector2Array(1975, 650, 2225, 650)
+width = 4.0
+default_color = Color(0.85, 0.85, 0.85, 1.0)
+
+[node name="Platform6" type="StaticBody2D" parent="."]
+
+[node name="PlatShape" type="CollisionShape2D" parent="Platform6"]
+position = Vector2(2600, 500)
+shape = SubResource("BoxShape2D_6")
+
+[node name="PlatLine" type="Line2D" parent="Platform6"]
+points = PackedVector2Array(2475, 500, 2725, 500)
+width = 4.0
+default_color = Color(0.85, 0.85, 0.85, 1.0)
+
+[node name="Platform7" type="StaticBody2D" parent="."]
+
+[node name="PlatShape" type="CollisionShape2D" parent="Platform7"]
+position = Vector2(3150, 650)
+shape = SubResource("BoxShape2D_7")
+
+[node name="PlatLine" type="Line2D" parent="Platform7"]
+points = PackedVector2Array(3025, 650, 3275, 650)
+width = 4.0
+default_color = Color(0.85, 0.85, 0.85, 1.0)
+
+[node name="Platform8" type="StaticBody2D" parent="."]
+
+[node name="PlatShape" type="CollisionShape2D" parent="Platform8"]
+position = Vector2(3700, 530)
+shape = SubResource("BoxShape2D_8")
+
+[node name="PlatLine" type="Line2D" parent="Platform8"]
+points = PackedVector2Array(3575, 530, 3825, 530)
+width = 4.0
+default_color = Color(0.85, 0.85, 0.85, 1.0)
+
+[node name="Platform9" type="StaticBody2D" parent="."]
+
+[node name="PlatShape" type="CollisionShape2D" parent="Platform9"]
+position = Vector2(4300, 630)
+shape = SubResource("BoxShape2D_9")
+
+[node name="PlatLine" type="Line2D" parent="Platform9"]
+points = PackedVector2Array(4150, 630, 4450, 630)
+width = 4.0
+default_color = Color(0.85, 0.85, 0.85, 1.0)
+
+[node name="Player" parent="." instance=ExtResource("2_ctrl")]
+position = Vector2(200, 755)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="LeftJoystick" parent="HUD" instance=ExtResource("3_vjoy")]
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="JumpButton" type="Button" parent="HUD"]
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -280.0
+offset_right = 220.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "JUMP"
+theme_override_font_sizes/font_size = 36
+
+[node name="RightJoystick" parent="HUD" instance=ExtResource("3_vjoy")]
+anchor_left = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dummy1" parent="." instance=ExtResource("4_dummy")]
+position = Vector2(1100, 755)
+
+[node name="Dummy2" parent="." instance=ExtResource("4_dummy")]
+position = Vector2(2400, 755)
+
+[node name="Dummy3" parent="." instance=ExtResource("4_dummy")]
+position = Vector2(3600, 755)
+
+[node name="Dummy4" parent="." instance=ExtResource("4_dummy")]
+position = Vector2(4600, 755)
